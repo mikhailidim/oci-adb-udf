@@ -2,8 +2,7 @@ import io
 import json
 import logging
 import socket
-
-#from fdk import response
+from fdk import response
 
 def handler(ctx, data: io.BytesIO=None):
     payload = None
@@ -32,8 +31,7 @@ def handler(ctx, data: io.BytesIO=None):
         rsp["result"] = 1
         rsp["error"] = { "message": str(ex)}
         pass
-    return json.dumps(rsp)           
     
-if __name__ == "__main__":
-    handler(None,json.dumps({"device" : "localhost:9100","payload": "SGVsbG8gV29ybGQhCg==" }))
-    
+    return response.Response(ctx, 
+                            response_data=json.dumps(rsp),
+                            headers={"Content-Type": "application/json"})
