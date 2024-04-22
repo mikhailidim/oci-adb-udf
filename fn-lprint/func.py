@@ -6,17 +6,23 @@ from fdk import response
 
 def handler(ctx, data: io.BytesIO=None):
     payload = None
-    device = "localhost:9100"
-    enc = "base64"
+    device = ""
     rsp = { "result": 0 }
     timeout = 10
     reply = None
+    
+    try:
+        # Retrieve key OCID and cryptographic endpoint
+        cfg = ctx.Config()
+        device = cfg.get("device","localhost:9100")
+    except Exception as ex:
+        print('ERROR: Missing configuration key', ex, flush=True)
+        raise    
+
     try:
         body = json.loads(data)
         device = body.get("device")
         timeout = body.config.pop("timeout",default=10)
-        
-        
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((device.split(":")[0], 
                         int((device.split(":")[1]))))
@@ -24,8 +30,7 @@ def handler(ctx, data: io.BytesIO=None):
             s.sendall(payload)
             reply = s.recv(1024)
             s.close()
-        rsp["success"] = {"status": "Ok","Sent": len(payload), "Received": int(reply)}
-        
+        rsp["success"] = {"status": "Ok","Sent": len(payload), "Received": int(reply)}        
     except (Exception, ValueError) as ex:
         print(str(ex))
         rsp["result"] = 1
