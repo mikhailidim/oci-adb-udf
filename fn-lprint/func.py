@@ -10,19 +10,27 @@ def handler(ctx, data: io.BytesIO=None):
     rsp = { "result": 0 }
     timeout = 10
     reply = None
-    
+    lgr = logging.getLogger()
     try:
         # Retrieve key OCID and cryptographic endpoint
         cfg = ctx.Config()
         device = cfg.get("device","localhost:9100")
+        lgr.setLevel(
+                    lgr.getLvelName(
+                    cfg.get("log_level","INFO"))
+        )
+        
     except Exception as ex:
         print('ERROR: Missing configuration key', ex, flush=True)
         raise    
-
+     
     try:
         body = json.loads(data)
+        lgr.debug(str(body))
+        lgr.debug(ctx)
         device = body.get("device")
         timeout = body.config.pop("timeout",default=10)
+        payload = body.get("text")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((device.split(":")[0], 
                         int((device.split(":")[1]))))

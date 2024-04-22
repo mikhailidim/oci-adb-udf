@@ -8,3 +8,4 @@ entrypoint: /python/bin/fdk /function/func.py handler
 memory: 256
 config:
   device: "localhost:9100"
+  log_level: "INFO"
