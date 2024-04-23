@@ -16,14 +16,14 @@ def handler(ctx, data: io.BytesIO=None):
         cfg = ctx.Config()
         device = cfg.get("device","localhost:9100")
         lgr.setLevel(
-                    lgr.getLvelName(
+                    logging.getLevelName(
                     cfg.get("log_level","INFO"))
         )
         
     except Exception as ex:
         print('ERROR: Missing configuration key', ex, flush=True)
         raise    
-     
+    
     try:
         body = json.loads(data)
         lgr.debug(str(body))
