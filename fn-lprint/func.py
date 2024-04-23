@@ -25,7 +25,7 @@ def handler(ctx, data: io.BytesIO=None):
         raise    
     
     try:
-        body = json.loads(data)
+        body = json.loads(data.getvalue())
         lgr.debug(str(body))
         lgr.debug(ctx)
         device = body.get("device")
