@@ -32,14 +32,16 @@ def handler(ctx, data: io.BytesIO=None):
         # Test if device is requested
 
         device = body["device"] if "device" in body else device
-        timeout = int(body["timout"])  if "timeout" in body else timeout
+        timeout = int(body["timeout"])  if "timeout" in body else timeout
         lgr.debug(f"Configuration extraxted. Device {device}, timeout: {timeout}")
-        payload = body.get("text")
+        payload = body.get("text").encode()
         lgr.info("Connecting to device")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((device.split(":")[0], 
-                        int((device.split(":")[1]))))
-            lgr.debug(f"Connected to {device}")            
+            addr = (device.split(":")[0], 
+                        int(device.split(":")[1]))
+            lgr.debug(f"Ready to access {addr}")            
+            s.connect(addr)
+            lgr.debug(f"Connected to {addr}")            
             s.settimeout(timeout)
             lgr.debug("Timout adjusted")
             s.sendall(payload)
@@ -47,7 +49,7 @@ def handler(ctx, data: io.BytesIO=None):
             reply = s.recv(1024)
             s.close()
             lgr.debug("Connection closed")
-        rsp["success"] = {"status": "Ok","Sent": len(payload), "Received": int(reply)}    
+        rsp["success"] = {"status": "Ok","Sent": len(payload), "Received": len(reply)}    
         lgr.debug(f"Ready to reply {rsp}")    
     except (Exception, ValueError) as ex:
         lgr.error(f"Received exception {ex}")
