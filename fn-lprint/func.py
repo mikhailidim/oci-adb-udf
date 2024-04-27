@@ -31,18 +31,22 @@ def handler(ctx, data: io.BytesIO=None):
         lgr.debug(f'Function context {ctx}')
         # Test if device is requested
 
-        device = body.device if "device" in body else device
-        timeout = int(body.timout)  if "timeout" in body else timeout
+        device = body["device"] if "device" in body else device
+        timeout = int(body["timout"])  if "timeout" in body else timeout
         lgr.debug(f"Configuration extraxted. Device {device}, timeout: {timeout}")
         payload = body.get("text")
         lgr.info("Connecting to device")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((device.split(":")[0], 
                         int((device.split(":")[1]))))
+            lgr.debug(f"Connected to {device}")            
             s.settimeout(timeout)
+            lgr.debug("Timout adjusted")
             s.sendall(payload)
+            lgr.debug("Message was send")
             reply = s.recv(1024)
             s.close()
+            lgr.debug("Connection closed")
         rsp["success"] = {"status": "Ok","Sent": len(payload), "Received": int(reply)}    
         lgr.debug(f"Ready to reply {rsp}")    
     except (Exception, ValueError) as ex:
