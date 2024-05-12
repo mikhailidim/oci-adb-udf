@@ -9,7 +9,7 @@ EXPOSE ${LISTEN_PORT}
 
 COPY requirements.txt device-driver.py ./
 
-RUN python -m pip install --upgrade pip
+#UN python -m pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 CMD [ "python", "./device-driver.py" ]
