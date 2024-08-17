@@ -28,3 +28,7 @@ On the diagram:
 
 Database code could call the function to send text and basic printer commands to the device using the local IP address and any random port. 
 That removes Oracle ADB limitations on accessing network or file resources. 
+
+
+The  cource code is licensed under [MIT License](./LINCENSE).
+ 
