@@ -3,14 +3,29 @@
 This project contains a Fn compatible function, prepared and tested to run as a serverless Oracle Cloud Infrastructure function. The function demonstrates Oracle Autonomous Database integration capabilities. Function accepts requests to the netowrk devices and forwards strings of text and pseudo  Printer Job Language ([PJL](https://en.wikipedia.org/wiki/Printer_Job_Language)) commands to alter device configuration or request status. 
 The function is designed and tested againts a [basic network printer simulator](../onprem-ascii-device). 
 
-### How to run Line Print function
+[!IMPORTANT]
+This function was designed as a demonstaration of Oracle Autonomous Database User-Defined Functions. 
+Although it's a working code, it was never developed to work in a production-grade environments. 
 
-You can run OCI Function a:
+### Deployment and prerequesits 
 
-- Local Python code
-- Docker container
+Before you could test the Line Print Ffunction 
 
-#### Local Python Code 
+### How to run Line Print Function
+
+According to [Oracle Documentation](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsinvokingfunctions.htm#rawrequestinvoke), to execute function you could use:
+
+- Using the Fn Project CLI.
+- Using the Oracle Cloud Infrastructure CLI.
+- Using the Oracle Cloud Infrastructure SDKs.
+- Making a signed HTTP request to the function's invoke endpoint.
+
+But before to test the function you need to complete prerequesites: 
+
+
+
+
+#### Using Fn Project CLI 
 
 To run device a s a local Python application, run commands as below. We recommedn you to create a new virtual environment for that. 
 
@@ -35,6 +50,10 @@ To run device a s a local Python application, run commands as below. We recommed
     $ LISTEN_PORT=9110 python device-driver.py 
  
    ```
+#### Using the Oracle Cloud Infrastructure CLI.
+#### Using the Oracle Cloud Infrastructure SDKs.
+#### Making a signed HTTP request to the function's invoke endpoint.
+
 #### Docker Container
 
 To run function as a container use Docker command as below:
