@@ -9,7 +9,19 @@ Although it's a working code, it was never developed to work in a production-gra
 
 ### Deployment and prerequesits 
 
-Before you could test the Line Print Ffunction 
+ Before use the function code, you may ned to:
+
+ OCI Prerequesites:
+
+ - Have access to the Oracle Cloud tenancy 
+ - Have access to the rquired Oracle Cloud components 
+ - Have appropriate policeis configured
+
+More details on Getting started with Cloud functions in OCI [Functions Quick Start](https://docs.oracle.com/en-us/iaas/Content/Functions/Tasks/functionsquickstartcloudshell.htm) guide.
+
+Target Prerequesites:
+
+ - Have network from function network to the selected target. 
 
 ### How to run Line Print Function
 
@@ -20,123 +32,74 @@ According to [Oracle Documentation](https://docs.oracle.com/en-us/iaas/Content/F
 - Using the Oracle Cloud Infrastructure SDKs.
 - Making a signed HTTP request to the function's invoke endpoint.
 
-But before to test the function you need to complete prerequesites: 
-
-
-
-
 #### Using Fn Project CLI 
 
-To run device a s a local Python application, run commands as below. We recommedn you to create a new virtual environment for that. 
+To run funcvtion with Fn CLI: 
 
-1. Clone this repository
-2. Install dependencies into your Python environment
+1. Clone this repository to the OCI Cloud Shell or to your local device
+    ```shell
+    $ git clone https://github.com/mikhailidim/oci-adb-udf.git
+    $ cd oci-adb-udf/fn-lprint
+    ```
+2. Checlk your access to OCI 
 
   ```shell
-    $ cd onprem-ascii-device
-    $ python -m pip install --upgrade pip
-    $  pip install -r requirements.txt    
-   ```
-3.  Run device emulator
+    # Login to your OCI account if needed
+    $ oci session authenticate
+    # List existing applications 
+    $ fn list apps 
+    ```
+3.  Buld and deploy function
 
    ```shell
-    $ python device-driver.py 
- 
+    $ fn build
+    $ fn deploy --app your-appkication-name
+    $
    ```
     
-4.  Optionally you may change device port with the **LISTEN_PORT** environment variable
+4.  After successful deployment call function
 
    ```shell
-    $ LISTEN_PORT=9110 python device-driver.py 
- 
+    $  echo '{"device":"YOUR-TEST-DEVICE-IP:LISTEN-PORT","text":"Hello","timeout":10,"font":"random"}' \
+       |fn invoke your-app-name fn-lprint 
    ```
 #### Using the Oracle Cloud Infrastructure CLI.
-#### Using the Oracle Cloud Infrastructure SDKs.
+You can call an OCI Function without FN CLi, but you need to know the OCI ID for the function before pacing a call. 
+
+1. Identify application and function IDs. Replace compartment ID with the compartment of your function.  
+
+   ```shell
+    $ export COMP_ID="ocid1.compartment.oc1.. *********rndm"
+    $ export APP_NAME="YOUR-APP-NAME"
+    $ export APP_ID=$(oci fn application list --compartment-id=$COMP_ID --display-name=$APP_NAME |jq '.data[0].id' -r)
+    $ export FN_ID=$(oci fn function list --application-id=$APP_ID |jq '.data[0].id' -r)
+   ```
+2. Invoke function with the identified OCID. 
+
+   ```shell
+    $ oci fn function invoke --function-id $FN_ID --body \
+      '{"device":"YOUR-TEST-DEVICE-IP:LISTEN-PORT","text":"Hello","timeout":10,"font":"random"}' \
+      --file fn_response.json  
+   ```
+During the call OCI passes value of the argument _body_ as function arguments and stores function reply to the file fn_response.json (as in example above). If you need to send respons eto standard output use - as a fine name. 
+
 #### Making a signed HTTP request to the function's invoke endpoint.
 
-#### Docker Container
+Every OCI function has an access endpoit. You could use it to place a raw HTTP calls. 
 
-To run function as a container use Docker command as below:
+1. Find the function endpoint. Toge a funcion OCID use commands from previous steps. 
 
-```
-  $ docker run -d -p 9100:9100 mikhailidim/print-device
-```
+    ```shell 
+     $ export FN_URL=$(oci fn function get --function-id $fn_id |jq '.data."invoke-endpoint"' -r)
+    ```
+2. Call function, using raw request command
 
-To change the port in the container use the environment variable **LINSTEN_PORT**:
-
-```
-  $ docker run -e "LISTEN_PORT=9110" -d -p 9110:9110 mikhailidim/print-device
-```
-
-
+    ```shell
+     $ oci raw-request --http-method POST --target-uri $FN_URL \ 
+       --request-body '{"device":"YOUR-TEST-DEVICE-IP:LISTEN-PORT","text":"Hello","timeout":10,"font":"random"}'
+    ```
 ### Functional Description and Usage
 
-When activated, the function accepts connections on port **9100** (default). Due to its sole illustration purpose, the function does not support multi-client access and maintains the global configuration settings between connections as a regular hardware device would. the code allows two types of communication: PJL (**P**rinter **J**ob **L**anguage) commands and text to print. 
-
-```shell
- $ nc localhost 9100 <<EOF
-  Text to Print
-  EOF 
-```
-
-As a result of the command above, the function will produce log entries similar to the sample below:
-
-```
-Connected by 192.168.1.1:29223
- _____              _     _            ____         _         _   
-|_   _|  ___ __  __| |_  | |_   ___   |  _ \  _ __ (_) _ __  | |_ 
-  | |   / _ \\ \/ /| __| | __| / _ \  | |_) || '__|| || '_ \ | __|
-  | |  |  __/ >  < | |_  | |_ | (_) | |  __/ | |   | || | | || |_ 
-  |_|   \___|/_/\_\ \__|  \__| \___/  |_|    |_|   |_||_| |_| \__|
-                                                                  
-
-
-Closed ('192.168.1.1', 29223)
-```
-
-To check the device status, use **@PJL INFO STATUS** command as in the example below
-
-```shell
-$ nc localhost 9100<<EOF
-  @PJL INFO STATUS
-  EOF
-```
-The simulator should reply with the status and current configuration details:
-
-```
-{'status': 'READY', 'config': {'encoding': 'utf-8'}, 'client': ('192.168.1.1', 29223)}
-
-```
-The configuration command  controls character encoding and  ASCII art font. To change the output, run the commands below:
-
-```shell
-$ nc localhost 9100 <<EOF
- @PJL CONFIG font=random
- Test Output
- Test 2
- EOF
-OK
-```
-Now, with the random ASCII font face, the device log my look like one below:
-
-```
-Connected by 192.168.1.1:46523
-                                                                                                   
-   ##     ######   ######   ######                     ##  ##   ######   ######   ##  ##   ######  
- ######   ######   ###      ######            ######   ##  ##   ######   ##  ##   ##  ##   ######  
-   ##     ##       ######     ##              ##  ##   ##  ##     ##     ##  ##   ##  ##     ##    
-   ##     ####         ##     ##              ##  ##   ##  ##     ##     ######   ##  ##     ##    
-   ##     ##       ######     ##              ##  ##   ######     ##     ###      ######     ##    
-   ####   ######   ######     ##              ######   ######     ##     ###      ######     ##    
-                                                                                                   
-
-         _  _________  _   _____          _    _____   _ 
- _______| |(  _   _  )( ) (  _  ) _______| |  (  _  ) ( )
-(_______  || | | | | || |_| | | |(_______  |  | | | |_| |
-        |_|(_) (_) (_)(_____) (_)        |_|  (_) (_____)
-
-
-Closed ('192.168.1.1', 46523)
 ```
 
 
