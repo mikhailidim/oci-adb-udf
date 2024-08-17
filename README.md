@@ -7,6 +7,10 @@ The repository contains two projects:
 * On-premises device emulator. Detail descriptions are [here](./onprem-ascii-device/README.md).
 * Oracle OCI Function project. The subfolder contains artifacts for building and deploying FDK-compatible [code](./fn-lprint/README.MD).
 
+> [!IMPORTANT]
+> This function was designed as a demonstaration of Oracle Autonomous Database User-Defined Functions. 
+> Although it's a working code, it was never developed to work in a production-grade environments. 
+
 ### Architecture Overview
 
 The code in the repository is compatible with multiple clouds or could be run on-premises. 
