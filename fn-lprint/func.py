@@ -46,7 +46,6 @@ def handler(ctx, data: io.BytesIO=None):
         body = json.loads(data.getvalue())
         lgr.debug(f'Reciveid request {body}')
         lgr.debug(f'Function context {ctx}')
-
         device = body['device'] if 'device' in body else device
         payload = body.get("text")
         lpconfig = json.loads(body['config']) if 'config' in body else {}         
