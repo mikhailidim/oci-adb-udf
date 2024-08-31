@@ -5,7 +5,7 @@ This repository contains sample code for the presentation "OCI Functions: Key to
 The repository contains two projects:
 
 * On-premises device emulator. Detail descriptions are [here](./onprem-ascii-device/README.md).
-* Oracle OCI Function project. The subfolder contains artifacts for building and deploying FDK-compatible [code](./fn-lprint/README.MD).
+* Oracle OCI Function project. The subfolder contains artifacts for building and deploying FDK-compatible [code](./fn-lprint/README.md).
 
 > [!IMPORTANT]
 > This function was designed as a demonstaration of Oracle Autonomous Database User-Defined Functions. 
