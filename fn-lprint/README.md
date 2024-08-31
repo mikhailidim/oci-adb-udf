@@ -121,10 +121,12 @@ The OCI passes function parameters in the second parameter __data__.  It contain
 
 * __device__ - The device description where data should be send. if the __device__ atribute is not defined, function will use the default device valut. 
 
-* __config__ - Optional objict containg one or more paramters to set. For the [demo printing device](../onprem-ascii-device) the meaningful configuration parameters are: _timeout_ and _font_. The function reads parameter pairs and transforms it into set of commands for the target device. Example below illustrates the behavior.
+* __config__ - Optional objict containg one or more paramters to set. For the [demo printing device](../onprem-ascii-device) the meaningful configuration parameters are: _timeout_ and _font_. The function reads parameter pairs and transforms it into set of commands for the target device.
 
-    ```json
-       {
+Example below illustrates the behavior.
+
+```json
+     {
         "device": "my-local-device:9100",
         "text": "Hello World",
         "config": {
@@ -132,21 +134,22 @@ The OCI passes function parameters in the second parameter __data__.  It contain
             "font": "random"
         }
        }
-    ```
+```   
+
 This will produce a series of the communication with the target device:
 
-    ```
-      "@JPL CONFIG timeout=1300" >> mu-local-device:900
-      "@JPL CONFIG font=random" >> mu-local-device:900
-      "Hello World" >> mu-local-device:900          
-    ```
+```
+      "@JPL CONFIG timeout=1300" >> my-local-device:900
+      "@JPL CONFIG font=random" >> my-local-device:900
+      "Hello World" >> my-local-device:900          
+```
 
 Function reurns response object with the JSON paylod that contains success call, or error details if call fails. 
 The JSON below demonstrates succesful data excahnge. 
 
-    ```json
+```json
       { "status": "Ok", "Sent": 11, "Received": 5}
-    ```
+```
 
 
 
