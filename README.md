@@ -5,7 +5,11 @@ This repository contains sample code for the presentation "OCI Functions: Key to
 The repository contains two projects:
 
 * On-premises device emulator. Detail descriptions are [here](./onprem-ascii-device/README.md).
-* Oracle OCI Function project. The subfolder contains artifacts for building and deploying FDK-compatible [code](./fn-lprint/README.MD).
+* Oracle OCI Function project. The subfolder contains artifacts for building and deploying FDK-compatible [code](./fn-lprint/README.md).
+
+> [!IMPORTANT]
+> This function was designed as a demonstaration of Oracle Autonomous Database User-Defined Functions. 
+> Although it's a working code, it was never developed to work in a production-grade environments. 
 
 ### Architecture Overview
 
@@ -24,3 +28,7 @@ On the diagram:
 
 Database code could call the function to send text and basic printer commands to the device using the local IP address and any random port. 
 That removes Oracle ADB limitations on accessing network or file resources. 
+
+-----
+
+The  cource code is licensed under [MIT License](./LINCENSE).
